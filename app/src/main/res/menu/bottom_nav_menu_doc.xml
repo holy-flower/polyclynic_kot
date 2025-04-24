@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home_doc"
+        android:icon="@drawable/ic_home"
+        android:title="@string/home" />
+
+    <item
+        android:id="@+id/techniques"
+        android:icon="@drawable/ic_techniques"
+        android:title="@string/techniques" />
+
+    <item
+        android:id="@+id/settins_doc"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings" />
+
+
+</menu>

@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">поликлиника</string>
+    <string name="full_name">ФИО</string>
+    <string name="specialization">Специализация</string>
+    <string name="license_number">Номер лицензии</string>
+    <string name="contact_phone_number">Контактный телефон</string>
+    <string name="make_an_appointment">Записаться на прием</string>
+    <string name="search">Найти</string>
+    <string name="register">Зарегестрироваться</string>
+    <string name="log_in_as_patient">Войти как пациент</string>
+    <string name="log_in">Войти</string>
+    <string name="email">Почта</string>
+    <string name="password">Пароль</string>
+    <string name="date">Дата</string>
+    <string name="select_a_date">Выбрать дату</string>
+    <string name="time">Время</string>
+    <string name="select_a_time">Выбрать время</string>
+    <string name="confirm_the_recording">Подтвердить запись</string>
+    <string name="birthday">Дата рождения</string>
+    <string name="policy">Полис</string>
+    <string name="passport_data">Паспортные данные</string>
+    <string name="place_of_registration">Место регистрации</string>
+    <string name="medical_history">История болезни</string>
+    <string name="save">Сохранить</string>
+    <string name="birthday_ddmmyyyy">Дата рождения (дд/мм/гггг)</string>
+    <string name="log_in_as_doctor">Войти как доктор</string>
+    <string name="home">Домой</string>
+    <string name="techniques">Приемы</string>
+    <string name="settings">Настройки</string>
+    <string name="medical_card">Медкарта</string>
+    <string name="language">Русский</string>
+    <string name="name_medicine">Название:</string>
+    <string name="composition">Состав:</string>
+    <string name="dosage">Способ применения:</string>
+    <string name="contraindications">Противопоказания:</string>
+    <string name="search_medicine">Поиск лекартва</string>
+    <string name="search_info_medicine">Найти информацию о лекарстве</string>
+    <string name="enter_name_medicine">Введите название лекарства</string>
+    <string name="update">Обновить</string>
+
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/etEmailPat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:ems="10"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etPasswordPat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="@+id/etEmailPat"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/etEmailPat"
+        app:layout_constraintTop_toBottomOf="@+id/etEmailPat" />
+
+    <Button
+        android:id="@+id/LogInAsDoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/log_in_as_doctor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/RegisterPat"
+        android:layout_width="327dp"
+        android:layout_height="58dp"
+        android:layout_marginBottom="28dp"
+        android:text="@string/register"
+        app:layout_constraintBottom_toTopOf="@+id/LogInAsDoc"
+        app:layout_constraintEnd_toEndOf="@+id/LogInAsDoc"
+        app:layout_constraintStart_toStartOf="@+id/LogInAsDoc" />
+
+    <Button
+        android:id="@+id/LogInPat"
+        android:layout_width="324dp"
+        android:layout_height="63dp"
+        android:text="@string/log_in"
+        app:layout_constraintBottom_toTopOf="@+id/RegisterPat"
+        app:layout_constraintEnd_toEndOf="@+id/RegisterPat"
+        app:layout_constraintStart_toStartOf="@+id/RegisterPat" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_back"
+            android:layout_marginTop="10dp"
+            android:minHeight="40dp"
+            android:minWidth="40dp"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/LogInAsPat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="@string/log_in_as_patient"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/RegisterDoc"
+        android:layout_width="327dp"
+        android:layout_height="58dp"
+        android:text="@string/register"
+        app:layout_constraintBottom_toTopOf="@+id/LogInAsPat"
+        app:layout_constraintEnd_toEndOf="@+id/LogInAsPat"
+        app:layout_constraintStart_toStartOf="@+id/LogInAsPat"
+        tools:layout_editor_absoluteX="26dp"
+        tools:layout_editor_absoluteY="345dp" />
+
+    <Button
+        android:id="@+id/LogInDoc"
+        android:layout_width="324dp"
+        android:layout_height="63dp"
+        android:text="@string/log_in"
+        app:layout_constraintBottom_toTopOf="@+id/RegisterDoc"
+        app:layout_constraintEnd_toEndOf="@+id/RegisterDoc"
+        app:layout_constraintStart_toStartOf="@+id/RegisterDoc"
+        tools:layout_editor_absoluteX="71dp"
+        tools:layout_editor_absoluteY="365dp" />
+
+    <EditText
+        android:id="@+id/etEmailDoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="156dp"
+        android:ems="10"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etPasswordDoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="@+id/etEmailDoc"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/etEmailDoc"
+        app:layout_constraintTop_toBottomOf="@+id/etEmailDoc" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
