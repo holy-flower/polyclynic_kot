@@ -75,6 +75,28 @@
         tools:layout_editor_absoluteY="357dp"
         android:layout_marginBottom="16dp" />
 
+    <EditText
+        android:id="@+id/etEmailPatReg"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="@string/email"
+        android:inputType="text"
+        tools:layout_editor_absoluteX="77dp"
+        tools:layout_editor_absoluteY="357dp"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/etPasswordPatReg"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="text"
+        tools:layout_editor_absoluteX="77dp"
+        tools:layout_editor_absoluteY="357dp"
+        android:layout_marginBottom="16dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

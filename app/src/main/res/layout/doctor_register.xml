@@ -20,6 +20,18 @@
     </LinearLayout>
 
     <EditText
+        android:id="@+id/etEmailRegDoc"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="@string/email"
+        android:inputType="text"
+        tools:layout_editor_absoluteX="79dp"
+        tools:layout_editor_absoluteY="47dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="50dp" />
+
+    <EditText
         android:id="@+id/etNameDoc"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -28,8 +40,7 @@
         android:inputType="text"
         tools:layout_editor_absoluteX="79dp"
         tools:layout_editor_absoluteY="47dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="50dp" />
+        android:layout_marginBottom="16dp" />
 
     <EditText
         android:id="@+id/etSpecializationDoc"
@@ -63,6 +74,17 @@
         tools:layout_editor_absoluteX="76dp"
         tools:layout_editor_absoluteY="253dp"
         android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etPasswordRegDoc"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="text"
+        tools:layout_editor_absoluteX="79dp"
+        tools:layout_editor_absoluteY="47dp"
+        android:layout_marginBottom="16dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
