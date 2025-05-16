@@ -10,4 +10,10 @@ interface AuthApi {
 
     @POST("register")
     fun register(@Body request: RegisterRequest): Call<AuthResponse>
+
+    @POST("doctors/login")
+    fun loginDoctor(@Body login: DoctorLoginRequest): Call<DoctorAuthResponse>
+
+    @POST("doctors/register")
+    fun registerDoctor(@Body request: DoctorRegisterRequest): Call<DoctorAuthResponse>
 }
