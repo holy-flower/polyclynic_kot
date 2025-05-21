@@ -6,14 +6,72 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.polyclynic_kot.server.ApiClientBase
+import com.example.polyclynic_kot.server.DoctorResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PatientHomeFragment : Fragment() {
-    private var originalItems = listOf("item 1", "Item 2")
+    private var doctorsList = mutableListOf<DoctorResponse>()
     private lateinit var adapter: ListDocAdapter
 
     override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.doctor_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.docList)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        adapter = ListDocAdapter(doctorsList, isSpecializationMode = false) { doctor ->
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.content_frame_pat, DoctorSpecListFragment.newInstance(doctor.specialization))
+                .addToBackStack(null)
+                .commit()
+        }
+        recyclerView.adapter = adapter
+        loadDoctors()
+    }
+
+    private fun loadDoctors() {
+        ApiClientBase.authApi.getDoctors().enqueue(object : Callback<List<DoctorResponse>> {
+            override fun onResponse(
+                call: Call<List<DoctorResponse>?>,
+                response: Response<List<DoctorResponse>?>
+            ) {
+                if (!isAdded) return
+
+                response.body()?.let { doctors ->
+                    doctorsList.clear()
+                    doctorsList.addAll(doctors)
+                    adapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onFailure(call: Call<List<DoctorResponse>?>, t: Throwable) {
+                Toast.makeText(context, "Ошибка загрузки: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+}
+
+
+
+
+
+
+/*
+override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -61,4 +119,4 @@ class PatientHomeFragment : Fragment() {
         }
         adapter.filterList(filteredList)
     }
-}
+ */

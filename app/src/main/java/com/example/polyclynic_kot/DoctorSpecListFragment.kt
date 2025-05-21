@@ -6,59 +6,90 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.polyclynic_kot.server.ApiClientBase
+import com.example.polyclynic_kot.server.DoctorResponse
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class DoctorSpecListFragment : Fragment() {
-    private var originalItems = listOf("item 3", "item 4")
+    private var doctorList = mutableListOf<DoctorResponse>()
     private lateinit var adapter: ListDocAdapter
+    private var specialization: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        specialization = arguments?.getString("SPECIALIZATION_KEY")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_doctor_spec_list, container, false)
+        return inflater.inflate(R.layout.fragment_doctor_spec_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.docListSpec)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        adapter = ListDocAdapter(originalItems, object : ListDocAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                when (position) {
-                    0 -> {
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.content_frame_pat, DoctorInfoFragment())
-                            .addToBackStack(null)
-                            .commit()
-                    }
-                }
-            }
-        })
+        adapter = ListDocAdapter(doctorList, isSpecializationMode = true) { doctor ->
+            //showDoctorDetails(doctor)
+        }
+
         recyclerView.adapter = adapter
-
-        val searchView = view.findViewById<SearchView>(R.id.etSearchDocSpec)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null) {
-                    filterList(newText)
-                }
-                return false
-            }
-
-        })
-
-        return view
+        loadDoctorsBySpecialization()
     }
 
-    private fun filterList(text: String) {
-        val filteredList = originalItems.filter {
-            it.contains(text, ignoreCase = true)
+    private var loadJob: Job? = null
+
+    private fun loadDoctorsBySpecialization() {
+        val spec = specialization ?: return
+        ApiClientBase.authApi.getDoctorsBySpecialization(spec).enqueue(object : Callback<List<DoctorResponse>> {
+            override fun onResponse(
+                call: Call<List<DoctorResponse>?>,
+                response: Response<List<DoctorResponse>?>
+            ) {
+                println("Server response: ${response.body()}")
+
+                if (response.isSuccessful) {
+                    response.body()?.let { doctors ->
+                        doctorList.clear()
+                        doctorList.addAll(doctors)
+                        adapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Ошибка сервера", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<DoctorResponse>?>, t: Throwable) {
+                Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    override fun onDestroyView() {
+        loadJob?.cancel()
+        super.onDestroyView()
+    }
+
+    companion object {
+        fun newInstance(specialization: String): DoctorSpecListFragment {
+            return DoctorSpecListFragment().apply {
+                arguments = Bundle().apply {
+                    putString("SPECIALIZATION_KEY", specialization)
+                }
+            }
         }
-        adapter.filterList(filteredList)
     }
 }

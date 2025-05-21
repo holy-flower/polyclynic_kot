@@ -2,6 +2,7 @@ package com.example.polyclynic_kot
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -50,6 +51,10 @@ class MainActivity : AppCompatActivity() {
         val call = ApiClientBase.authApi.login(LoginRequest(email, password))
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+                Log.d("LOGIN", "Response code: ${response.code()}")
+                Log.d("LOGIN", "Response body: ${response.body()}")
+                Log.d("LOGIN", "Error body: ${response.errorBody()?.string()}")
+
                 if (response.isSuccessful) {
                     Toast.makeText(this@MainActivity, "Успешный вход", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@MainActivity, PatientActivity::class.java)
