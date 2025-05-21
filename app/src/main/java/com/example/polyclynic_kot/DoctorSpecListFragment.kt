@@ -43,14 +43,21 @@ class DoctorSpecListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         adapter = ListDocAdapter(doctorList, isSpecializationMode = true) { doctor ->
-            //showDoctorDetails(doctor)
+            showDoctorDetails(doctor)
         }
 
         recyclerView.adapter = adapter
         loadDoctorsBySpecialization()
     }
 
-    private var loadJob: Job? = null
+    private fun showDoctorDetails (doctor: DoctorResponse) {
+        val doctorInfoFragment = DoctorInfoFragment.newInstance(doctor)
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.content_frame_pat, doctorInfoFragment)
+            .addToBackStack(null)
+            .commit()
+    }
 
     private fun loadDoctorsBySpecialization() {
         val spec = specialization ?: return
@@ -78,10 +85,11 @@ class DoctorSpecListFragment : Fragment() {
         })
     }
 
-    override fun onDestroyView() {
-        loadJob?.cancel()
-        super.onDestroyView()
-    }
+    //private var loadJob: Job? = null
+    //override fun onDestroyView() {
+        //loadJob?.cancel()
+        //super.onDestroyView()
+    //}
 
     companion object {
         fun newInstance(specialization: String): DoctorSpecListFragment {

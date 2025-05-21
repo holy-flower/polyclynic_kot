@@ -6,23 +6,48 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import com.example.polyclynic_kot.server.DoctorResponse
 
 class AppointmentFragment : Fragment() {
+    private lateinit var doctor: DoctorResponse
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        doctor = arguments?.getParcelable("SELECTED_DOCTOR")!!
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_appointment, container, false)
+        return inflater.inflate(R.layout.fragment_appointment, container, false)
+    }
 
-        val bRecording = view.findViewById<Button>(R.id.bConfirmRec)
-        bRecording.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.content_frame_pat, PatientHomeFragment())
-                .addToBackStack(null)
-                .commit()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<TextView>(R.id.tvNameDoctor).text = doctor.name
+        view.findViewById<TextView>(R.id.tvSpecializationDoctor).text = doctor.specialization
+
+        view.findViewById<Button>(R.id.bConfirmRec).setOnClickListener {
+            confirmAppointment()
         }
+    }
 
-        return view
+    companion object {
+        fun newInstance(doctor: DoctorResponse): AppointmentFragment {
+            return AppointmentFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable("SELECTED_DOCTOR", doctor)
+                }
+            }
+        }
+    }
+
+    private fun confirmAppointment() {
+        //Toast.makeText(AppointmentFragment(), "Успешная регистрация", Toast.LENGTH_SHORT).show()
     }
 }
