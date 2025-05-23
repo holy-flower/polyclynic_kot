@@ -51,12 +51,23 @@ class DoctorSpecListFragment : Fragment() {
     }
 
     private fun showDoctorDetails (doctor: DoctorResponse) {
+        val args = Bundle().apply {
+            putLong("DOCTOR_ID", doctor.doctor_id)
+        }
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.content_frame_pat, AppointmentFragment.newInstance(doctor.doctor_id))
+            .addToBackStack(null)
+            .commit()
+
+        /*
         val doctorInfoFragment = DoctorInfoFragment.newInstance(doctor)
 
         parentFragmentManager.beginTransaction()
             .replace(R.id.content_frame_pat, doctorInfoFragment)
             .addToBackStack(null)
             .commit()
+         */
     }
 
     private fun loadDoctorsBySpecialization() {

@@ -1,6 +1,7 @@
 package com.example.polyclynic_kot
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.nfc.Tag
 import android.os.Bundle
@@ -73,6 +74,9 @@ class PatientRegistration : AppCompatActivity() {
 
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 if (response.isSuccessful) {
+                    val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                    sharedPref.edit().putLong("USER_ID", response.body()?.userId ?: -1).apply()
+
                     val intent = Intent(this@PatientRegistration, PatientActivity::class.java)
                     startActivity(intent)
                 } else {

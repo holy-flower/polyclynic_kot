@@ -16,5 +16,6 @@ data class RegisterRequest (
 )
 
 data class AuthResponse (
+    val userId: Long,
     val token: String
 )

@@ -5,14 +5,14 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class DoctorResponse(
+    val doctor_id: Long,
     val emailDoc: String,
     val name: String,
     val specialization: String,
     val license: String,
     val phone: String
 ) : Parcelable {
-    // Для отладки можно переопределить toString()
     override fun toString(): String {
-        return "Doctor(name='$name', email='$emailDoc', specialization='$specialization')"
+        return "Doctor(id=$doctor_id, name='$name', email='$emailDoc', specialization='$specialization')"
     }
 }

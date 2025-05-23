@@ -1,9 +1,12 @@
 package com.example.polyclynic_kot.server
 
+import com.example.polyclynic_kot.server.appointment.AppointmentResponse
+import com.example.polyclynic_kot.server.appointment.CreateAppointmentRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AuthApi {
@@ -24,4 +27,11 @@ interface AuthApi {
 
     @GET("doctors/by-specialization")
     fun getDoctorsBySpecialization(@Query("specialization") specialization: String): Call<List<DoctorResponse>>
+
+    @GET("doctors/{id}")
+    fun getDoctorById(@Path("id") id: Long): Call<DoctorResponse>
+
+    @POST("appointments")
+    fun createAppointment(@Body request: CreateAppointmentRequest): Call<Void>
+
 }

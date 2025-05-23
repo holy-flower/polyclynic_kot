@@ -1,5 +1,6 @@
 package com.example.polyclynic_kot
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -57,6 +58,11 @@ class MainActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
                     Toast.makeText(this@MainActivity, "Успешный вход", Toast.LENGTH_SHORT).show()
+
+                    val userId = response.body()!!.userId
+                    val sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+                    sharedPref.edit().putLong("USER_ID", userId).apply()
+
                     val intent = Intent(this@MainActivity, PatientActivity::class.java)
                     startActivity(intent)
                 } else {
