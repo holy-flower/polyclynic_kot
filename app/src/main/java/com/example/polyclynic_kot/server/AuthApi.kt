@@ -34,4 +34,7 @@ interface AuthApi {
     @POST("appointments")
     fun createAppointment(@Body request: CreateAppointmentRequest): Call<Void>
 
+    @GET("user/{id}")
+    fun getUserById(@Path("id") id: Long): Call<UserResponse>
+
 }

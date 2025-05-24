@@ -1,5 +1,6 @@
 package com.example.polyclynic_kot
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -63,6 +64,11 @@ class StartDoctor : AppCompatActivity() {
             override fun onResponse(call: Call<DoctorAuthResponse>, response: Response<DoctorAuthResponse>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@StartDoctor, "Успешный вход", Toast.LENGTH_SHORT).show()
+
+                    val doctorId = response.body()!!.doctorId
+                    val sharedPref = getSharedPreferences("doctor_session", Context.MODE_PRIVATE)
+                    sharedPref.edit().putLong("DOCTOR_ID", doctorId).apply()
+
                     val intent = Intent(this@StartDoctor, DoctorActivity::class.java)
                     startActivity(intent)
                 } else {

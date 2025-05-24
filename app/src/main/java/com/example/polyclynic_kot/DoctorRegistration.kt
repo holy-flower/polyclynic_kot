@@ -1,5 +1,6 @@
 package com.example.polyclynic_kot
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -67,6 +68,9 @@ class DoctorRegistration : AppCompatActivity() {
 
             override fun onResponse(call: Call<DoctorAuthResponse?>, response: Response<DoctorAuthResponse?>) {
                 if (response.isSuccessful) {
+                    val sharedPref = getSharedPreferences("doctor_session", Context.MODE_PRIVATE)
+                    sharedPref.edit().putLong("DOCTOR_ID", response.body()?.doctorId ?: -1).apply()
+
                     val intent = Intent(this@DoctorRegistration, DoctorActivity::class.java)
                     startActivity(intent)
                 } else {

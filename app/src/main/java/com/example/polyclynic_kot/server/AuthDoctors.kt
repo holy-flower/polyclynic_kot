@@ -15,5 +15,6 @@ data class DoctorRegisterRequest(
 )
 
 data class DoctorAuthResponse(
+    val doctorId: Long,
     val token: String
 )
