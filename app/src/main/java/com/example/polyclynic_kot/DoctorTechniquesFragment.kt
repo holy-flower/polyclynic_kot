@@ -25,6 +25,7 @@ import java.time.LocalDateTime
 class DoctorTechniquesFragment : Fragment() {
     private var appointments = mutableListOf<PatientAppointment>()
     private lateinit var adapter: ListPatAdapter
+    private var filteredAppointments = mutableListOf<PatientAppointment>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +39,8 @@ class DoctorTechniquesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(view)
+        setupSearch(view)
+        setupSearchButton(view)
         loadAppointments()
     }
 
@@ -45,7 +48,7 @@ class DoctorTechniquesFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.patListMed)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        adapter = ListPatAdapter(mutableListOf()) { appointment ->
+        adapter = ListPatAdapter(filteredAppointments) { appointment ->
             appointment.user?.let { user ->
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.content_frame_doc, AddMedicalHistoryPatFragment.newInstance(
@@ -55,6 +58,48 @@ class DoctorTechniquesFragment : Fragment() {
             }
         }
         recyclerView.adapter = adapter
+    }
+
+    private fun setupSearch(view: View) {
+        val searchView = view.findViewById<SearchView>(R.id.etSearchPatTech)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterAppointments(newText.orEmpty())
+                return true
+            }
+        })
+    }
+
+    private fun setupSearchButton(view: View) {
+        val searchView = view.findViewById<SearchView>(R.id.etSearchPatTech)
+        val button = view.findViewById<View>(R.id.bSearchPatient)
+
+        button.setOnClickListener {
+            val query = searchView.query.toString().trim()
+            filterAppointments(query)
+        }
+    }
+
+    private fun filterAppointments(query: String) {
+        val lowerQuery = query.lowercase()
+
+        filteredAppointments.clear()
+        filteredAppointments.addAll(
+            appointments.filter {
+                val name = it.user?.username?.lowercase().orEmpty()
+                val email = it.user?.email?.lowercase().orEmpty()
+                name.contains(lowerQuery) || email.contains(lowerQuery)
+            }
+        )
+        adapter.notifyDataSetChanged()
+
+        if (filteredAppointments.isEmpty()) {
+            context?.let {
+                Toast.makeText(it, "Пациент не найден", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun loadAppointments() {
@@ -116,7 +161,10 @@ class DoctorTechniquesFragment : Fragment() {
                     appointments.add(PatientAppointment(appointment, user))
                     completed++
                     if (completed == total) {
-                        adapter.updateList(appointments)
+                        //adapter.updateList(appointments)
+                        filteredAppointments.clear()
+                        filteredAppointments.addAll(appointments)
+                        adapter.notifyDataSetChanged()
                     }
                 }
 
@@ -124,7 +172,10 @@ class DoctorTechniquesFragment : Fragment() {
                     //appointments.add(PatientAppointment(appointment, null))
                     completed++
                     if (completed == total) {
-                        adapter.updateList(appointments)
+                        //adapter.updateList(appointments)
+                        filteredAppointments.clear()
+                        filteredAppointments.addAll(appointments)
+                        adapter.notifyDataSetChanged()
                     }
                 }
             })

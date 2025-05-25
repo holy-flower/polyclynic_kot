@@ -42,22 +42,3 @@ class ListDocAdapter (private var doctors: List<DoctorResponse>,
 
     override fun getItemCount() = doctors.size
 }
-
-/*
-interface OnItemClickListener {
-        fun onItemClick(position: Int)
-    }
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(R.id.text_view)
-
-        fun bind(item: String) {
-            textView.text = item
-        }
-    }
-
-    fun filterList(filteredList: List<String>) {
-        items = filteredList
-        notifyDataSetChanged()
-    }
- */

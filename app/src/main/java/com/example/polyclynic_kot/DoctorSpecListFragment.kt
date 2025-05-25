@@ -7,19 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.polyclynic_kot.server.ApiClientBase
 import com.example.polyclynic_kot.server.DoctorResponse
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class DoctorSpecListFragment : Fragment() {
     private var doctorList = mutableListOf<DoctorResponse>()
+    private var filteredDoctorList = mutableListOf<DoctorResponse>()
+
     private lateinit var adapter: ListDocAdapter
     private var specialization: String? = null
 
@@ -42,12 +41,53 @@ class DoctorSpecListFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.docListSpec)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        adapter = ListDocAdapter(doctorList, isSpecializationMode = true) { doctor ->
+        adapter = ListDocAdapter(filteredDoctorList, isSpecializationMode = true) { doctor ->
             showDoctorDetails(doctor)
         }
 
         recyclerView.adapter = adapter
+
+        setupSearch(view)
+        setupSearchButton(view)
         loadDoctorsBySpecialization()
+    }
+
+    private fun setupSearch(view: View) {
+        val searchView = view.findViewById<SearchView>(R.id.etSearchDocSpec)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterDoctors(newText.orEmpty())
+                return true
+            }
+        })
+    }
+
+    private fun setupSearchButton(view: View) {
+        val searchView = view.findViewById<SearchView>(R.id.etSearchDocSpec)
+        val button = view.findViewById<View>(R.id.bSearchDocSpec)
+
+        button.setOnClickListener {
+            val query = searchView.query.toString().trim()
+            filterDoctors(query)
+        }
+    }
+
+    private fun filterDoctors(query: String) {
+        val lowerQuery = query.lowercase()
+
+        filteredDoctorList.clear()
+        filteredDoctorList.addAll(
+            doctorList.filter {
+                it.name.lowercase().contains(lowerQuery)
+            }
+        )
+        adapter.notifyDataSetChanged()
+
+        if (filteredDoctorList.isEmpty()) {
+            Toast.makeText(requireContext(), "Ничего не найдено", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun showDoctorDetails (doctor: DoctorResponse) {
@@ -59,15 +99,6 @@ class DoctorSpecListFragment : Fragment() {
             .replace(R.id.content_frame_pat, AppointmentFragment.newInstance(doctor.doctor_id))
             .addToBackStack(null)
             .commit()
-
-        /*
-        val doctorInfoFragment = DoctorInfoFragment.newInstance(doctor)
-
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.content_frame_pat, doctorInfoFragment)
-            .addToBackStack(null)
-            .commit()
-         */
     }
 
     private fun loadDoctorsBySpecialization() {
@@ -83,6 +114,10 @@ class DoctorSpecListFragment : Fragment() {
                     response.body()?.let { doctors ->
                         doctorList.clear()
                         doctorList.addAll(doctors)
+
+                        filteredDoctorList.clear()
+                        filteredDoctorList.addAll(doctorList)
+
                         adapter.notifyDataSetChanged()
                     }
                 } else {
@@ -95,12 +130,6 @@ class DoctorSpecListFragment : Fragment() {
             }
         })
     }
-
-    //private var loadJob: Job? = null
-    //override fun onDestroyView() {
-        //loadJob?.cancel()
-        //super.onDestroyView()
-    //}
 
     companion object {
         fun newInstance(specialization: String): DoctorSpecListFragment {

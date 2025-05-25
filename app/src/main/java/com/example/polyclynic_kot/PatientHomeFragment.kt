@@ -16,8 +16,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class PatientHomeFragment : Fragment() {
-    private var doctorsList = mutableListOf<DoctorResponse>()
+    private var doctorsList = listOf<DoctorResponse>()
     private lateinit var adapter: ListDocAdapter
+    private var filteredSpecializationList = mutableListOf<DoctorResponse>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,14 +34,51 @@ class PatientHomeFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.docList)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        adapter = ListDocAdapter(doctorsList, isSpecializationMode = false) { doctor ->
+        adapter = ListDocAdapter(filteredSpecializationList, isSpecializationMode = false) { doctor ->
             parentFragmentManager.beginTransaction()
                 .replace(R.id.content_frame_pat, DoctorSpecListFragment.newInstance(doctor.specialization))
                 .addToBackStack(null)
                 .commit()
         }
         recyclerView.adapter = adapter
+
+        setupSearch(view)
+        setupSearchButton(view)
         loadDoctors()
+    }
+
+    private fun setupSearch(view: View) {
+        val searchView = view.findViewById<SearchView>(R.id.etSearchDoc)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterSpecializations(newText.orEmpty())
+                return true
+            }
+        })
+    }
+
+    private fun setupSearchButton(view: View) {
+        val searchView = view.findViewById<SearchView>(R.id.etSearchDoc)
+        val button = view.findViewById<View>(R.id.bSearchDoc)
+
+        button.setOnClickListener {
+            val query = searchView.query.toString().trim()
+            filterSpecializations(query)
+        }
+    }
+
+    private fun filterSpecializations(query: String) {
+        val lowerQuery = query.lowercase()
+
+        filteredSpecializationList.clear()
+        filteredSpecializationList.addAll(
+            doctorsList.filter {
+                it.specialization.lowercase().contains(lowerQuery)
+            }
+        )
+        adapter.notifyDataSetChanged()
     }
 
     private fun loadDoctors() {
@@ -52,8 +90,21 @@ class PatientHomeFragment : Fragment() {
                 if (!isAdded) return
 
                 response.body()?.let { doctors ->
-                    doctorsList.clear()
-                    doctorsList.addAll(doctors)
+                    val uniqueSpecs = doctors.map { it.specialization }.distinct()
+
+                    doctorsList = uniqueSpecs.map { spec ->
+                        DoctorResponse(
+                            doctor_id = 0L,
+                            emailDoc = "",
+                            name = "",
+                            specialization = spec,
+                            license = "",
+                            phone = ""
+                        )
+                    }
+
+                    filteredSpecializationList.clear()
+                    filteredSpecializationList.addAll(doctorsList)
                     adapter.notifyDataSetChanged()
                 }
             }
@@ -64,59 +115,3 @@ class PatientHomeFragment : Fragment() {
         })
     }
 }
-
-
-
-
-
-
-/*
-override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.doctor_list, container, false)
-
-        val recyclerView = view.findViewById<RecyclerView>(R.id.docList)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        adapter = ListDocAdapter(originalItems, object : ListDocAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                when (position) {
-                    0 -> {
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.content_frame_pat, DoctorSpecListFragment())
-                            .addToBackStack(null)
-                            .commit()
-                    }
-                }
-            }
-
-        })
-        recyclerView.adapter = adapter
-
-        val searchView = view.findViewById<SearchView>(R.id.etSearchDoc)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null ) {
-                    filterList(newText)
-                }
-                return false
-            }
-
-        })
-
-        return view
-    }
-
-    private fun filterList(text: String) {
-        val filteredList = originalItems.filter {
-            it.contains(text, ignoreCase = true)
-        }
-        adapter.filterList(filteredList)
-    }
- */
