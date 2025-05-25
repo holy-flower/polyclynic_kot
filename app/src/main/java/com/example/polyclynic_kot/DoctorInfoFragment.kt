@@ -28,11 +28,11 @@ class DoctorInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<TextView>(R.id.tvNameDoc).text = doctor.name
-        view.findViewById<TextView>(R.id.tvSpecializationDoc).text = doctor.specialization
-        view.findViewById<TextView>(R.id.tvPhone).text = doctor.phone
-        view.findViewById<TextView>(R.id.tvLicenseDoc).text = doctor.license
-        view.findViewById<TextView>(R.id.tvEmailDoc).text = doctor.emailDoc
+        view.findViewById<TextView>(R.id.tvNameDoc).text = "ФИО: ${doctor.name}"
+        view.findViewById<TextView>(R.id.tvSpecializationDoc).text = "Специализация: ${doctor.specialization}"
+        view.findViewById<TextView>(R.id.tvPhone).text = "Контактный телефон: ${doctor.phone}"
+        view.findViewById<TextView>(R.id.tvLicenseDoc).text = "Номер лицензии: ${doctor.license}"
+        view.findViewById<TextView>(R.id.tvEmailDoc).text = "Почта: ${doctor.emailDoc}"
 
 
     }
@@ -47,17 +47,3 @@ class DoctorInfoFragment : Fragment() {
         }
     }
 }
-
-/*
-val view = inflater.inflate(R.layout.doctor_info, container, false)
-
-        val bAppointment = view.findViewById<Button>(R.id.bAppointment)
-        bAppointment.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.content_frame_pat, AppointmentFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
-        return view
- */

@@ -19,6 +19,7 @@ import com.example.polyclynic_kot.server.appointment.PatientAppointment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
 
 
 class DoctorTechniquesFragment : Fragment() {
@@ -91,11 +92,23 @@ class DoctorTechniquesFragment : Fragment() {
             return
         }
 
+        val now = LocalDateTime.now()
+
+        val upcomingAppointments = appointmentsList.filter {
+            val appointmentsDateTime = LocalDateTime.parse("${it.date}T${it.time}")
+            appointmentsDateTime.isAfter(now)
+        }
+
+        if (upcomingAppointments.isEmpty()) {
+            adapter.updateList(emptyList())
+            return
+        }
+
         appointments.clear()
-        val total = appointmentsList.size
+        val total = upcomingAppointments.size
         var completed = 0
 
-        for (appointment in appointmentsList) {
+        for (appointment in upcomingAppointments) {
             ApiClientBase.authApi.getUserById(appointment.userId).enqueue(object : Callback<UserResponse> {
                 override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                     val user = response.body()
@@ -107,7 +120,7 @@ class DoctorTechniquesFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                    appointments.add(PatientAppointment(appointment, null))
+                    //appointments.add(PatientAppointment(appointment, null))
                     completed++
                     if (completed == total) {
                         adapter.updateList(appointments)
@@ -126,79 +139,3 @@ class DoctorTechniquesFragment : Fragment() {
         return id
     }
 }
-
-
-
-
-
-/*
-val recyclerView = view.findViewById<RecyclerView>(R.id.patListMed)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        adapter = ListPatAdapter(originalItems, object : ListPatAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                when (position) {
-                    0 -> {
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.content_frame_doc, AddMedicalHistoryPatFragment())
-                            .addToBackStack(null)
-                            .commit()
-                    }
-                }
-            }
-        })
-        recyclerView.adapter = adapter
-
-        val searchView = view.findViewById<SearchView>(R.id.etSearchPatTech)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null) {
-                    filterList(newText)
-                }
-                return false
-            }
-        })
-
-
-
-
-        private fun filterList(text: String) {
-        val filteredList = originalItems.filter {
-            it.contains(text, ignoreCase = true)
-        }
-        adapter.filterList(filteredList)
-    }
-
-
-
-
-
-
-    appointmentsList.forEach { appointment ->
-            ApiClientBase.authApi.getUserById(appointment.userId).enqueue(
-                object : Callback<UserResponse> {
-                    override fun onResponse(
-                        call: Call<UserResponse?>,
-                        response: Response<UserResponse?>
-                    ) {
-                        if (response.isSuccessful) {
-                            response.body()?.let { user ->
-                                appointments.add(PatientAppointment(appointment, user))
-
-                                adapter.notifyDataSetChanged()
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<UserResponse?>, t: Throwable) {
-                        appointments.add(PatientAppointment(appointment, null))
-                        adapter.notifyDataSetChanged()
-                    }
-                }
-            )
-        }
- */

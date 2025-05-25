@@ -18,7 +18,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tvNamePat"
+        android:id="@+id/tvNamePatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/full_name"
@@ -28,7 +28,7 @@
         android:gravity="center"/>
 
     <TextView
-        android:id="@+id/tvBirthdayPat"
+        android:id="@+id/tvBirthdayPatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/birthday"
@@ -37,7 +37,7 @@
         android:gravity="center"/>
 
     <TextView
-        android:id="@+id/tvPolicyPat"
+        android:id="@+id/tvPolicyPatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/policy"
@@ -46,7 +46,7 @@
         android:gravity="center"/>
 
     <TextView
-        android:id="@+id/tvPassportPat"
+        android:id="@+id/tvPassportPatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/passport_data"
@@ -55,7 +55,7 @@
         android:gravity="center"/>
 
     <TextView
-        android:id="@+id/tvRegistrationPat"
+        android:id="@+id/tvRegistrationPatient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/place_of_registration"

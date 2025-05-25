@@ -29,11 +29,11 @@ class AddMedicalHistoryPatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<TextView>(R.id.tvNamePat).text = user.username
-        view.findViewById<TextView>(R.id.tvBirthdayPat).text = user.datetime
-        view.findViewById<TextView>(R.id.tvPolicyPat).text = user.policy
-        view.findViewById<TextView>(R.id.tvPassportPat).text = user.passport
-        view.findViewById<TextView>(R.id.tvRegistrationPat).text = user.registerPlace
+        view.findViewById<TextView>(R.id.tvNamePat).text = "ФИО: ${user.username}"
+        view.findViewById<TextView>(R.id.tvBirthdayPat).text = "Дата рождения: ${user.datetime}"
+        view.findViewById<TextView>(R.id.tvPolicyPat).text = "Полис: ${user.policy}"
+        view.findViewById<TextView>(R.id.tvPassportPat).text = "Паспорт: ${user.passport}"
+        view.findViewById<TextView>(R.id.tvRegistrationPat).text = "Место регистрации: ${user.registerPlace}"
     }
 
     override fun onCreateView(

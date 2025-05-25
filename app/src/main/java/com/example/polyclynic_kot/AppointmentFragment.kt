@@ -96,8 +96,8 @@ class AppointmentFragment : Fragment() {
             ) {
                 if (response.isSuccessful) {
                     response.body()?.let { doctor ->
-                        view?.findViewById<TextView>(R.id.tvNameDoctor)?.text = doctor.name
-                        view?.findViewById<TextView>(R.id.tvSpecializationDoctor)?.text = doctor.specialization
+                        view?.findViewById<TextView>(R.id.tvNameDoctor)?.text = "ФИО: ${doctor.name}"
+                        view?.findViewById<TextView>(R.id.tvSpecializationDoctor)?.text = "Специализация: ${doctor.specialization}"
                     }
                 } else {
                     val errorMessage = response.errorBody()?.string()
