@@ -48,7 +48,8 @@ class DoctorTechniquesFragment : Fragment() {
         adapter = ListPatAdapter(mutableListOf()) { appointment ->
             appointment.user?.let { user ->
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.content_frame_doc, AddMedicalHistoryPatFragment.newInstance(user))
+                    .replace(R.id.content_frame_doc, AddMedicalHistoryPatFragment.newInstance(
+                        user, appointment.appointment.doctorId, appointment.appointment.date, appointment.appointment.time))
                     .addToBackStack(null)
                     .commit()
             }

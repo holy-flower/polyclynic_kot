@@ -6,7 +6,8 @@ data class AppointmentResponse (
     val doctorId: Long,
     val userId: Long,
     val date: String,
-    val time: String
+    val time: String,
+    val notes: String
 )
 
 data class PatientAppointment(

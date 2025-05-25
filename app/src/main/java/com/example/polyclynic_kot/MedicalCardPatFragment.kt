@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.example.polyclynic_kot.server.ApiClientBase
 import com.example.polyclynic_kot.server.UserResponse
+import com.example.polyclynic_kot.server.appointment.AppointmentResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,7 +21,7 @@ class MedicalCardPatFragment : Fragment() {
         inflater: LayoutInflater,  container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.patient_info, container, false)
+        return inflater.inflate(R.layout.patient_medicalcard, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,16 +35,43 @@ class MedicalCardPatFragment : Fragment() {
                 if (response.isSuccessful && response.body() != null) {
                     val user = response.body()!!
 
-                    view.findViewById<TextView>(R.id.tvNamePatient).text = "ФИО: ${user.username}"
-                    view.findViewById<TextView>(R.id.tvBirthdayPatient).text = "Дата рождения: ${user.datetime}"
-                    view.findViewById<TextView>(R.id.tvPolicyPatient).text = "Полис: ${user.policy}"
-                    view.findViewById<TextView>(R.id.tvPassportPatient).text = "Паспортные данные: ${user.passport}"
-                    view.findViewById<TextView>(R.id.tvRegistrationPatient).text = "Место регистрации: ${user.registerPlace}"
+                    view.findViewById<TextView>(R.id.tvPatientName).text = "ФИО: ${user.username}"
+                    view.findViewById<TextView>(R.id.tvPatientBirthday).text = "Дата рождения: ${user.datetime}"
+                    view.findViewById<TextView>(R.id.tvPatientPolicy).text = "Полис: ${user.policy}"
+                    view.findViewById<TextView>(R.id.tvPatientPassport).text = "Паспортные данные: ${user.passport}"
+                    view.findViewById<TextView>(R.id.tvPatientRegistration).text = "Место регистрации: ${user.registerPlace}"
                 }
             }
 
             override fun onFailure(call: Call<UserResponse?>, t: Throwable) {
                 Toast.makeText(requireContext(), "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        val tvMedicalHistory = view.findViewById<TextView>(R.id.tvMedHistory)
+        ApiClientBase.authApi.getAppointmentsByUserId(userId).enqueue(object : Callback<List<AppointmentResponse>> {
+            override fun onResponse(
+                call: Call<List<AppointmentResponse>?>,
+                response: Response<List<AppointmentResponse>?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val appointments = response.body()!!
+                    if (appointments.isNotEmpty()) {
+                        val historyText = appointments.mapIndexed { index, appointment ->
+                            "${index + 1}) ${appointment.date} ${appointment.time} - ${appointment.notes.ifEmpty { "Нет записи" }}"
+                        }.joinToString("\n")
+
+                        tvMedicalHistory.text = "История болезни: \n$historyText"
+                    } else {
+                        tvMedicalHistory.text = "История болезни: нет записей"
+                    }
+                } else {
+                    tvMedicalHistory.text = "Ошибка загрузки истории болезни"
+                }
+            }
+
+            override fun onFailure(call: Call<List<AppointmentResponse>?>, t: Throwable) {
+                tvMedicalHistory.text = "Ошибка при подключении к серверу: ${t.message}"
             }
         })
     }

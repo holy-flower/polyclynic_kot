@@ -6,6 +6,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -39,4 +40,24 @@ interface AuthApi {
 
     @GET("appointments/doctor/{doctorId}")
     fun getDoctorAppointments(@Path("doctorId") doctorId: Long): Call<List<AppointmentResponse>>
+
+    @PUT("appointments/notes")
+    fun updateMedicalNotes(
+        @Query("doctorId") doctorId: Long,
+        @Query("userId") userId: Long,
+        @Query("date") date: String,
+        @Query("time") time: String,
+        @Body notes: String
+    ): Call<Void>
+
+    @GET("appointments/by-keys")
+    fun getAppointmentByKeys(
+        @Query("doctorId") doctorId: Long,
+        @Query("userId") userId: Long,
+        @Query("date") date: String,
+        @Query("time") time: String
+    ): Call<AppointmentResponse>
+
+    @GET("appointments/by-user/{userId}")
+    fun getAppointmentsByUserId(@Path("userId") userId: Long): Call<List<AppointmentResponse>>
 }
