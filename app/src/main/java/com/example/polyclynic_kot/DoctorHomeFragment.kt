@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class DoctorHomeFragment : Fragment() {
+    /*
     private var originalItems = listOf("item 1", "item 2", "Sam", "Lor", "Sama")
     private lateinit var adapter: ListPatAdapter
 
@@ -61,4 +62,5 @@ class DoctorHomeFragment : Fragment() {
         }
         adapter.filterList(filteredList)
     }
+     */
 }

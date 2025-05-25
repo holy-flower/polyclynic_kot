@@ -6,10 +6,13 @@ import android.view.ViewGroup
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.polyclynic_kot.server.appointment.AppointmentResponse
+import com.example.polyclynic_kot.server.appointment.PatientAppointment
 
-class ListPatAdapter (private var items: List<String>, private val listener: OnItemClickListener) : RecyclerView.Adapter<ListPatAdapter.ViewHolder>() {
-    interface OnItemClickListener {
-        fun onItemClick(position: Int)
+class ListPatAdapter (private var items: MutableList<PatientAppointment>, private val onItemClick: (PatientAppointment) -> Unit) : RecyclerView.Adapter<ListPatAdapter.ViewHolder>() {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvNamePat: TextView = view.findViewById(R.id.tvPatientName)
+        val tvDateReg: TextView = view.findViewById(R.id.tvPatientDateReg)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -19,22 +22,17 @@ class ListPatAdapter (private var items: List<String>, private val listener: OnI
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(items[position])
-        holder.itemView.setOnClickListener { listener.onItemClick(position) }
+        val item = items[position]
+        holder.tvNamePat.text = item.user?.username ?: "Неизвестный пациент"
+        holder.tvDateReg.text = "${item.appointment.date} ${item.appointment.time}"
+        holder.itemView.setOnClickListener { onItemClick(item) }
     }
 
     override fun getItemCount() = items.size
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textView: TextView = itemView.findViewById(R.id.text_view_pat)
-
-        fun bind(item: String) {
-            textView.text = item
-        }
-    }
-
-    fun filterList(filteredList: List<String>) {
-        items = filteredList
+    fun updateList(newList: List<PatientAppointment>) {
+        items.clear()
+        items.addAll(newList)
         notifyDataSetChanged()
     }
 }
