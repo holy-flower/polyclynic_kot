@@ -24,6 +24,15 @@ class DoctorHomeFragment : Fragment() {
     private var filteredAppointments = mutableListOf<PatientAppointment>()
     private lateinit var adapter: ListPatAdapter
 
+    private val SEARCH_PREF = "search_history"
+    private val SEARCH_KEY = "history_list"
+    private val MAX_HISTORY_SIZE = 10
+    private var searchHistory = mutableListOf<String>()
+    private lateinit var historyAdapter: android.widget.ArrayAdapter<String>
+
+    private lateinit var searchHistoryList: android.widget.ListView
+    private lateinit var clearHistoryButton: View
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +44,13 @@ class DoctorHomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        searchHistoryList = view.findViewById(R.id.searchHistoryList)
+        clearHistoryButton = view.findViewById(R.id.clearHistoryButton)
+
+        loadSearchHistory()
+        setupHistoryUI()
+
         setupRecyclerView(view)
         setupSearch(view)
         setupSearchButton(view)
@@ -57,14 +73,104 @@ class DoctorHomeFragment : Fragment() {
         recyclerView.adapter = adapter
     }
 
+    private fun loadSearchHistory() {
+        val prefs = requireContext().getSharedPreferences(SEARCH_PREF, Context.MODE_PRIVATE)
+        searchHistory.clear()
+
+        try {
+            val savedString = prefs.getString(SEARCH_KEY, null)
+            if (!savedString.isNullOrEmpty()) {
+                searchHistory.addAll(savedString.split(",").filter { it.isNotBlank() })
+            } else {
+                val savedSet = prefs.getStringSet(SEARCH_KEY, emptySet())
+                if (!savedSet.isNullOrEmpty()) {
+                    searchHistory.addAll(savedSet)
+                }
+            }
+        } catch (e: ClassCastException) {
+            prefs.edit().remove(SEARCH_KEY).apply()
+        }
+    }
+
+    private fun saveSearchQuery(query: String) {
+        if (query.isBlank()) return
+
+        searchHistory.remove(query)
+        searchHistory.add(0, query)
+
+        while (searchHistory.size > MAX_HISTORY_SIZE) {
+            searchHistory.removeAt(searchHistory.lastIndex)
+        }
+
+        val prefs = requireContext().getSharedPreferences(SEARCH_PREF, Context.MODE_PRIVATE)
+        prefs.edit().putString(SEARCH_KEY, searchHistory.joinToString(",")).apply()
+
+        if (::historyAdapter.isInitialized) {
+            historyAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun clearSearchHistory() {
+        searchHistory.clear()
+        val prefs = requireContext().getSharedPreferences(SEARCH_PREF, Context.MODE_PRIVATE)
+        prefs.edit().remove(SEARCH_KEY).apply()
+
+        if (::historyAdapter.isInitialized) {
+            historyAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun setupHistoryUI() {
+        historyAdapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, searchHistory)
+        searchHistoryList.adapter = historyAdapter
+
+        searchHistoryList.setOnItemClickListener { _, _, position, _ ->
+            val selected = searchHistory[position]
+            val searchView = view?.findViewById<SearchView>(R.id.etSearchPat)
+            searchView?.setQuery(selected, true)
+        }
+
+        clearHistoryButton.setOnClickListener {
+            clearSearchHistory()
+            hideSearchHistory()
+        }
+    }
+
+    private fun showSearchHistory() {
+        if (searchHistory.isNotEmpty()) {
+            searchHistoryList.visibility = View.VISIBLE
+            clearHistoryButton.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideSearchHistory() {
+        searchHistoryList.visibility = View.GONE
+        clearHistoryButton.visibility = View.GONE
+    }
+
     private fun setupSearch(view: View) {
         val searchView = view.findViewById<SearchView>(R.id.etSearchPat)
+
+        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus && searchHistory.isNotEmpty()) {
+                showSearchHistory()
+            } else {
+                hideSearchHistory()
+            }
+        }
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    saveSearchQuery(it)
+                    filterAppointments(it)
+                    hideSearchHistory()
+                }
+                return true
+            }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterAppointments(newText.orEmpty())
-                return true
+                return false // фильтруем только по submit
             }
         })
     }
@@ -75,7 +181,11 @@ class DoctorHomeFragment : Fragment() {
 
         button.setOnClickListener {
             val query = searchView.query.toString().trim()
-            filterAppointments(query)
+            if (query.isNotEmpty()) {
+                saveSearchQuery(query)
+                filterAppointments(query)
+                hideSearchHistory()
+            }
         }
     }
 
