@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Switch
+import androidx.appcompat.app.AppCompatDelegate
 import java.util.Locale
 
 class SettingsDocFragment : Fragment() {
@@ -20,38 +21,15 @@ class SettingsDocFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.settings_doc_layout, container, false)
 
-        val switchLanguage = view.findViewById<Switch>(R.id.languageSwitch)
-        switchLanguage.setOnCheckedChangeListener { _, isChecked ->
-            val newLocale = if (isChecked) "en" else "ru"
-            updateLocale(requireContext(), newLocale)
-            // Обновление UI без пересоздания активности
-            view.post { updateView(view) }
+        val switchTheme = view.findViewById<Switch>(R.id.switchThemeDoc)
+        switchTheme.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
         }
 
         return view
-    }
-
-    private fun updateLocale(context: Context, language: String) {
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-
-        val config = Configuration(context.resources.configuration)
-        config.setLocale(locale)
-
-        val resources = context.resources
-        val metrics = resources.displayMetrics
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            context.createConfigurationContext(config)
-        } else {
-            resources.updateConfiguration(config, metrics)
-        }
-    }
-
-    private fun updateView(view: View) {
-        // Обновление текста или других элементов UI после изменения локали
-        // Например:
-        val switchLanguage = view.findViewById<Switch>(R.id.languageSwitch)
-        switchLanguage.text = if (switchLanguage.isChecked) "English" else "Русский"
     }
 }

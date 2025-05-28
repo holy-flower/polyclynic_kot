@@ -18,14 +18,6 @@ class SettingsPatFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.settings_layout, container, false)
 
-        val bSearchMed = view.findViewById<Button>(R.id.bSearchMed)
-        bSearchMed.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.content_frame_pat, AIFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
         val switchTheme = view.findViewById<Switch>(R.id.switchTheme)
         switchTheme.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -38,3 +30,23 @@ class SettingsPatFragment : Fragment() {
         return view
     }
 }
+
+/*
+val bSearchMed = view.findViewById<Button>(R.id.bSearchMed)
+        bSearchMed.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.content_frame_pat, AIFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+<Button
+        android:id="@+id/bSearchMed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="144dp"
+        android:text="@string/search_info_medicine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+ */

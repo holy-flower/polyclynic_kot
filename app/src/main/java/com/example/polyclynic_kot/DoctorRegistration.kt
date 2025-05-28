@@ -39,12 +39,32 @@ class DoctorRegistration : AppCompatActivity() {
             val phone = etPhone.text.toString()
             val password = etPassword.text.toString()
 
-            if (email.isNotEmpty() && name.isNotEmpty() && specialization.isNotEmpty()
-                && license.isNotEmpty() && phone.isNotEmpty() && password.isNotEmpty()) {
-                registerDoctor(email, name, specialization, license, phone, password)
-            } else {
+            if (email.isBlank() || name.isBlank() || specialization.isBlank()
+                || license.isBlank() || phone.isBlank() || password.isBlank()) {
                 Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            // ФИО должно состоять из 3 слов
+            if (name.trim().split("\\s+".toRegex()).size != 3) {
+                Toast.makeText(this, "Введите ФИО (три слова)", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Лицензия: формат **-**-******
+            if (!license.matches(Regex("""\d{2}-\d{2}-\d{6}"""))) {
+                Toast.makeText(this, "Лицензия должна быть в формате: ХХ-ХХ-ХХХХХХ", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Телефон: формат +7 (***) ***-**-**
+            if (!phone.matches(Regex("""\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}"""))) {
+                Toast.makeText(this, "Телефон должен быть в формате: +7 (XXX) XXX-XX-XX", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Всё прошло — отправка запроса
+            registerDoctor(email, name, specialization, license, phone, password)
         }
 
         val imageView = findViewById<ImageView>(R.id.imageView)

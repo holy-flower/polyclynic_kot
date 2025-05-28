@@ -37,5 +37,6 @@
     <string name="search_info_medicine">Найти информацию о лекарстве</string>
     <string name="enter_name_medicine">Введите название лекарства</string>
     <string name="update">Обновить</string>
+    <string name="switch_theme">Сменить тему</string>
 
 </resources>

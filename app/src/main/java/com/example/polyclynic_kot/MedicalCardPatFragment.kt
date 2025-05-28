@@ -56,9 +56,10 @@ class MedicalCardPatFragment : Fragment() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     val appointments = response.body()!!
-                    if (appointments.isNotEmpty()) {
-                        val historyText = appointments.mapIndexed { index, appointment ->
-                            "${index + 1}) ${appointment.date} ${appointment.time} - ${appointment.notes.ifEmpty { "Нет записи" }}"
+                    val filledAppointments = appointments.filter { it.notes.isNotBlank() }
+                    if (filledAppointments.isNotEmpty()) {
+                        val historyText = filledAppointments.mapIndexed { index, appointment ->
+                            "${index + 1}) ${appointment.notes}"
                         }.joinToString("\n")
 
                         tvMedicalHistory.text = "История болезни: \n$historyText"
