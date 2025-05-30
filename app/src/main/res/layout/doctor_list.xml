@@ -51,8 +51,43 @@
         android:id="@+id/clear_his_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Очистить историю"
+        android:text="@string/clean_history"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/placeholder_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nothing_was_found"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:padding="24dp"
+        android:visibility="gone"
+        android:textColor="@android:color/darker_gray" />
+
+    <LinearLayout
+        android:id="@+id/placeholder_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/data_upload_error"
+            android:textSize="16sp"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <Button
+            android:id="@+id/button_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/update"
+            android:layout_marginTop="12dp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/docList"

@@ -31,6 +31,10 @@ class DoctorSpecListFragment : Fragment() {
     private lateinit var historyAdapter: android.widget.ArrayAdapter<String>
     private var searchHistory = mutableListOf<String>()
 
+    private lateinit var placeholderNoResults: View
+    private lateinit var placeholderError: View
+    private lateinit var retryButton: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         specialization = arguments?.getString("SPECIALIZATION_KEY")
@@ -58,6 +62,15 @@ class DoctorSpecListFragment : Fragment() {
 
         searchHistoryList = view.findViewById(R.id.search_history_list_spec)
         clearHistoryButton = view.findViewById(R.id.clear_history_button_spec)
+
+        placeholderNoResults = view.findViewById(R.id.placeholder_no_results)
+        placeholderError = view.findViewById(R.id.placeholder_error_spec)
+        retryButton = view.findViewById(R.id.button_retry_spec)
+
+        retryButton.setOnClickListener {
+            placeholderError.visibility = View.GONE
+            loadDoctorsBySpecialization()
+        }
 
         loadSearchHistory()
         setupHistoryUI()
@@ -185,7 +198,9 @@ class DoctorSpecListFragment : Fragment() {
         adapter.notifyDataSetChanged()
 
         if (filteredDoctorList.isEmpty()) {
-            Toast.makeText(requireContext(), "Ничего не найдено", Toast.LENGTH_SHORT).show()
+            placeholderNoResults.visibility = View.VISIBLE
+        } else {
+            placeholderNoResults.visibility = View.GONE
         }
     }
 
@@ -202,6 +217,10 @@ class DoctorSpecListFragment : Fragment() {
 
     private fun loadDoctorsBySpecialization() {
         val spec = specialization ?: return
+
+        placeholderError.visibility = View.GONE
+        placeholderNoResults.visibility = View.GONE
+
         ApiClientBase.authApi.getDoctorsBySpecialization(spec).enqueue(object : Callback<List<DoctorResponse>> {
             override fun onResponse(
                 call: Call<List<DoctorResponse>?>,
@@ -218,13 +237,19 @@ class DoctorSpecListFragment : Fragment() {
                         filteredDoctorList.addAll(doctorList)
 
                         adapter.notifyDataSetChanged()
+
+                        // Скрываем плейсхолдеры, если всё загрузилось
+                        placeholderError.visibility = View.GONE
+                        placeholderNoResults.visibility = if (filteredDoctorList.isEmpty()) View.VISIBLE else View.GONE
                     }
                 } else {
+                    placeholderError.visibility = View.VISIBLE
                     Toast.makeText(requireContext(), "Ошибка сервера", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<DoctorResponse>?>, t: Throwable) {
+                placeholderError.visibility = View.VISIBLE
                 Toast.makeText(requireContext(), "Ошибка: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

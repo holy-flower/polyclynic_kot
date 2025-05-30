@@ -29,6 +29,10 @@ class PatientHomeFragment : Fragment() {
     private lateinit var searchHistoryList: android.widget.ListView
     private lateinit var clearHistoryButton: View
 
+    private lateinit var placeholderEmpty: View
+    private lateinit var placeholderError: View
+    private lateinit var retryButton: View
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,6 +57,15 @@ class PatientHomeFragment : Fragment() {
 
         searchHistoryList = view.findViewById(R.id.search_his_list)
         clearHistoryButton = view.findViewById(R.id.clear_his_button)
+
+        placeholderEmpty = view.findViewById(R.id.placeholder_empty)
+        placeholderError = view.findViewById(R.id.placeholder_error)
+        retryButton = view.findViewById(R.id.button_retry)
+
+        retryButton.setOnClickListener {
+            loadDoctors()
+            placeholderError.visibility = View.GONE
+        }
 
         loadSearchHistory()
         setupHistoryUI()
@@ -179,17 +192,26 @@ class PatientHomeFragment : Fragment() {
 
     private fun filterSpecializations(query: String) {
         val lowerQuery = query.lowercase()
-
         filteredSpecializationList.clear()
-        filteredSpecializationList.addAll(
-            doctorsList.filter {
-                it.specialization.lowercase().contains(lowerQuery)
-            }
-        )
+
+        val results = doctorsList.filter {
+            it.specialization.lowercase().contains(lowerQuery)
+        }
+
+        if (results.isEmpty()) {
+            placeholderEmpty.visibility = View.VISIBLE
+        } else {
+            placeholderEmpty.visibility = View.GONE
+            filteredSpecializationList.addAll(results)
+        }
+
         adapter.notifyDataSetChanged()
     }
 
     private fun loadDoctors() {
+        placeholderEmpty.visibility = View.GONE
+        placeholderError.visibility = View.GONE
+
         ApiClientBase.authApi.getDoctors().enqueue(object : Callback<List<DoctorResponse>> {
             override fun onResponse(
                 call: Call<List<DoctorResponse>?>,
@@ -197,7 +219,8 @@ class PatientHomeFragment : Fragment() {
             ) {
                 if (!isAdded) return
 
-                response.body()?.let { doctors ->
+                if (response.isSuccessful && response.body() != null) {
+                    val doctors = response.body()!!
                     val uniqueSpecs = doctors.map { it.specialization }.distinct()
 
                     doctorsList = uniqueSpecs.map { spec ->
@@ -214,12 +237,24 @@ class PatientHomeFragment : Fragment() {
                     filteredSpecializationList.clear()
                     filteredSpecializationList.addAll(doctorsList)
                     adapter.notifyDataSetChanged()
+
+                    placeholderEmpty.visibility = if (doctorsList.isEmpty()) View.VISIBLE else View.GONE
+                } else {
+                    showErrorPlaceholder()
                 }
             }
 
             override fun onFailure(call: Call<List<DoctorResponse>?>, t: Throwable) {
-                Toast.makeText(context, "Ошибка загрузки: ${t.message}", Toast.LENGTH_SHORT).show()
+                if (!isAdded) return
+                showErrorPlaceholder()
             }
         })
+    }
+
+    private fun showErrorPlaceholder() {
+        placeholderError.visibility = View.VISIBLE
+        placeholderEmpty.visibility = View.GONE
+        filteredSpecializationList.clear()
+        adapter.notifyDataSetChanged()
     }
 }

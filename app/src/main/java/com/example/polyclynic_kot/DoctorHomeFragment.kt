@@ -33,6 +33,10 @@ class DoctorHomeFragment : Fragment() {
     private lateinit var searchHistoryList: android.widget.ListView
     private lateinit var clearHistoryButton: View
 
+    private lateinit var placeholderError: View
+    private lateinit var placeholderNoResults: View
+    private lateinit var retryButton: View
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,6 +51,15 @@ class DoctorHomeFragment : Fragment() {
 
         searchHistoryList = view.findViewById(R.id.searchHistoryList)
         clearHistoryButton = view.findViewById(R.id.clearHistoryButton)
+
+        placeholderError = view.findViewById(R.id.placeholder_error_doc)
+        placeholderNoResults = view.findViewById(R.id.placeholder_no_results_doc)
+        retryButton = view.findViewById(R.id.button_retry_doc)
+
+        retryButton.setOnClickListener {
+            placeholderError.visibility = View.GONE
+            loadAppointments()
+        }
 
         loadSearchHistory()
         setupHistoryUI()
@@ -170,7 +183,7 @@ class DoctorHomeFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                return false // фильтруем только по submit
+                return false
             }
         })
     }
@@ -202,16 +215,15 @@ class DoctorHomeFragment : Fragment() {
         )
         adapter.notifyDataSetChanged()
 
-        if (filteredAppointments.isEmpty()) {
-            context?.let {
-                Toast.makeText(it, "Пациент не найден", Toast.LENGTH_SHORT).show()
-            }
-        }
+        placeholderNoResults.visibility = if (filteredAppointments.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun loadAppointments() {
         val doctorId = getCurrentDoctorId()
         println("DEBUG: Loading appointments for doctor ID: $doctorId")
+
+        placeholderError.visibility = View.GONE
+        placeholderNoResults.visibility = View.GONE
 
         if (doctorId == -1L) {
             Toast.makeText(requireContext(), "Не удалось получить ID доктора", Toast.LENGTH_LONG).show()
@@ -226,14 +238,18 @@ class DoctorHomeFragment : Fragment() {
                 if (response.isSuccessful && response.body() != null) {
                     val appointmentsList = response.body()!!
                     Log.d("APPOINTMENTS", "Получено записей: ${appointmentsList.size}")
-                    appointmentsList.forEach { Log.d("APPOINTMENT", "appointment.userId=${it.userId}") }
+                    if (appointmentsList.isEmpty()) {
+                        placeholderNoResults.visibility = View.VISIBLE
+                    }
                     loadUsersForAppointments(appointmentsList)
                 } else {
+                    placeholderError.visibility = View.VISIBLE
                     Toast.makeText(requireContext(), "Нет записей на приём", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<AppointmentResponse>?>, t: Throwable) {
+                placeholderError.visibility = View.VISIBLE
                 Toast.makeText(requireContext(), "Ошибка загрузки приёмов: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
@@ -241,7 +257,8 @@ class DoctorHomeFragment : Fragment() {
 
     private fun loadUsersForAppointments(appointmentsList: List<AppointmentResponse>) {
         if (appointmentsList.isEmpty()) {
-            adapter.updateList(emptyList())
+            filteredAppointments.clear()
+            adapter.notifyDataSetChanged()
             return
         }
 
@@ -256,10 +273,10 @@ class DoctorHomeFragment : Fragment() {
                     appointments.add(PatientAppointment(appointment, user))
                     completed++
                     if (completed == total) {
-                        //adapter.updateList(appointments)
                         filteredAppointments.clear()
                         filteredAppointments.addAll(appointments)
                         adapter.notifyDataSetChanged()
+                        placeholderNoResults.visibility = if (filteredAppointments.isEmpty()) View.VISIBLE else View.GONE
                     }
                 }
 
@@ -267,7 +284,10 @@ class DoctorHomeFragment : Fragment() {
                     appointments.add(PatientAppointment(appointment, null))
                     completed++
                     if (completed == total) {
-                        adapter.updateList(appointments)
+                        filteredAppointments.clear()
+                        filteredAppointments.addAll(appointments)
+                        adapter.notifyDataSetChanged()
+                        placeholderNoResults.visibility = if (filteredAppointments.isEmpty()) View.VISIBLE else View.GONE
                     }
                 }
             })

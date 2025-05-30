@@ -38,6 +38,10 @@ class DoctorTechniquesFragment : Fragment() {
     private val MAX_HISTORY_SIZE = 10
     private lateinit var historyAdapter: android.widget.ArrayAdapter<String>
 
+    private lateinit var emptyPlaceholder: View
+    private lateinit var errorPlaceholder: View
+    private lateinit var retryButton: View
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +58,15 @@ class DoctorTechniquesFragment : Fragment() {
             searchView = view.findViewById(R.id.etSearchPatTech)
             searchHistoryList = view.findViewById(R.id.search_history_list)
             clearHistoryButton = view.findViewById(R.id.clear_history_button)
+
+            emptyPlaceholder = view.findViewById(R.id.empty_placeholder)
+            errorPlaceholder = view.findViewById(R.id.error_placeholder)
+            retryButton = view.findViewById(R.id.retry_button)
+
+            retryButton.setOnClickListener {
+                errorPlaceholder.visibility = View.GONE
+                loadAppointments()
+            }
 
             setupRecyclerView(view)
             loadSearchHistory()
@@ -110,7 +123,6 @@ class DoctorTechniquesFragment : Fragment() {
         searchHistory.remove(query)
         searchHistory.add(0, query)
 
-        // Обрезаем без переназначения списка
         if (searchHistory.size > MAX_HISTORY_SIZE) {
             while (searchHistory.size > MAX_HISTORY_SIZE) {
                 searchHistory.removeAt(searchHistory.lastIndex)
@@ -154,7 +166,7 @@ class DoctorTechniquesFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                return false // не фильтруем по мере ввода, только при submit/кнопке
+                return false
             }
         })
     }
@@ -215,15 +227,20 @@ class DoctorTechniquesFragment : Fragment() {
         adapter.notifyDataSetChanged()
 
         if (filteredAppointments.isEmpty()) {
-            context?.let {
-                Toast.makeText(it, "Пациент не найден", Toast.LENGTH_SHORT).show()
-            }
+            emptyPlaceholder.visibility = View.VISIBLE
+        } else {
+            emptyPlaceholder.visibility = View.GONE
         }
+
+        errorPlaceholder.visibility = View.GONE
     }
 
     private fun loadAppointments() {
         val doctorId = getCurrentDoctorId()
         println("DEBUG: Loading appointments for doctor ID: $doctorId")
+
+        emptyPlaceholder.visibility = View.GONE
+        errorPlaceholder.visibility = View.GONE
 
         if (doctorId == -1L) {
             Toast.makeText(requireContext(), "Не удалось получить ID доктора", Toast.LENGTH_LONG).show()
@@ -238,15 +255,25 @@ class DoctorTechniquesFragment : Fragment() {
                 if (response.isSuccessful && response.body() != null) {
                     val appointmentsList = response.body()!!
                     Log.d("APPOINTMENTS", "Получено записей: ${appointmentsList.size}")
-                    appointmentsList.forEach { Log.d("APPOINTMENT", "appointment.userId=${it.userId}") }
+
+                    if (appointmentsList.isEmpty()) {
+                        adapter.updateList(emptyList())
+                        emptyPlaceholder.visibility = View.VISIBLE
+                        return
+                    }
+
                     loadUsersForAppointments(appointmentsList)
                 } else {
                     Toast.makeText(requireContext(), "Нет записей на приём", Toast.LENGTH_SHORT).show()
+                    adapter.updateList(emptyList())
+                    emptyPlaceholder.visibility = View.VISIBLE
                 }
             }
 
             override fun onFailure(call: Call<List<AppointmentResponse>?>, t: Throwable) {
                 Toast.makeText(requireContext(), "Ошибка загрузки приёмов: ${t.message}", Toast.LENGTH_SHORT).show()
+                errorPlaceholder.visibility = View.VISIBLE
+                adapter.updateList(emptyList())
             }
         })
     }
@@ -280,7 +307,6 @@ class DoctorTechniquesFragment : Fragment() {
                     appointments.add(PatientAppointment(appointment, user))
                     completed++
                     if (completed == total) {
-                        //adapter.updateList(appointments)
                         filteredAppointments.clear()
                         filteredAppointments.addAll(appointments)
                         adapter.notifyDataSetChanged()
@@ -288,7 +314,6 @@ class DoctorTechniquesFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                    //appointments.add(PatientAppointment(appointment, null))
                     completed++
                     if (completed == total) {
                         //adapter.updateList(appointments)

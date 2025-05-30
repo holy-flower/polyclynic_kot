@@ -49,31 +49,26 @@ class PatientRegistration : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Проверка ФИО (3 слова)
             if (userName.trim().split("\\s+".toRegex()).size != 3) {
                 Toast.makeText(this, "Введите ФИО (три слова)", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Проверка даты рождения
             if (!birthday.matches(Regex("""\d{2}/\d{2}/\d{4}"""))) {
                 Toast.makeText(this, "Дата рождения должна быть в формате ДД/ММ/ГГГГ", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Проверка полиса (16 цифр)
             if (!policy.matches(Regex("""\d{16}"""))) {
                 Toast.makeText(this, "Полис должен содержать 16 цифр", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Проверка паспорта (формат ** ** ******)
             if (!passport.matches(Regex("""\d{2}\s\d{2}\s\d{6}"""))) {
                 Toast.makeText(this, "Паспорт должен быть в формате: ХХ ХХ ХХХХХХ", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Все проверки пройдены
             registerUser(userName, password, email, birthday, policy, passport, registerPlace)
 
         }
